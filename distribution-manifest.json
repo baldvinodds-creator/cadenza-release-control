@@ -1,0 +1,105 @@
+{
+  "scope": "DISABLED_CONTROL_REPOSITORY_REVIEW",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "41d13ca841c84b61366a8b5ab835c7a9bab8081a1caf7add48caaec663807c20",
+      "bytes": 5412
+    },
+    {
+      "path": "enrollment.json",
+      "sha256": "4033d856150f76ab4576e7b588ade713482b1dfbcbce3033f2a5e89b8f958508",
+      "bytes": 2240
+    },
+    {
+      "path": "execute-release.mjs",
+      "sha256": "a7e24ffab8744c9bbed0b0ce86ff731dd00369ee65dd93a08fe09a8b4799dfc9",
+      "bytes": 7161
+    },
+    {
+      "path": "prepare-attestation.mjs",
+      "sha256": "2ca19a5c8daaf7ae15ece5bd1c1ad0ce3551885459668bb91e35360185dd2cb4",
+      "bytes": 2225
+    },
+    {
+      "path": ".github/workflows/owner-release.yml",
+      "sha256": "5dd473732f457f4c8a72ceaa6e89f2226d57e4e744a8ce7eb02e01ada253ed52",
+      "bytes": 2836
+    },
+    {
+      "path": ".github/workflows/request-release.yml",
+      "sha256": "f9a400dc05f8f8bd025e170626b97409208e667b661fa0280afa07bd49f88267",
+      "bytes": 2475
+    },
+    {
+      "path": ".github/workflows/prebuilt-builder.yml",
+      "sha256": "9f2a792240bf111863caf386a904f50e5bf035c6a2c7dae8d212c36fc39f2925",
+      "bytes": 2106
+    },
+    {
+      "path": "toolchain/package.json",
+      "sha256": "a4a8cd9400505b5968b5258aed42042dcd15d3c3e16f4bf85369dd030edc9e4e",
+      "bytes": 133
+    },
+    {
+      "path": "toolchain/package-lock.json",
+      "sha256": "5de8f3c89195d5266c92a845d2f82a15cb94a80515dea68e8d4f3128ad7c770a",
+      "bytes": 151717
+    },
+    {
+      "path": "gate/control-runtime.mjs",
+      "sha256": "9d88a04930e07b2eb41df8dae2cbaa9f93f0a45a56cafd40b168b3cfaf4698e6",
+      "bytes": 286899
+    },
+    {
+      "path": "gate/github-approval.mjs",
+      "sha256": "995baa61d5428d2664e0562bc5d9439c2bdd1e1bcda04ab458ced7a5b4c57fa0",
+      "bytes": 8305
+    },
+    {
+      "path": "gate/artifact-provenance.mjs",
+      "sha256": "a007a1039d44ea5ef8ea2028ce7e883614c93a091b953b5712eef658496ee794",
+      "bytes": 3781
+    },
+    {
+      "path": "gate/prepare-artifact.mjs",
+      "sha256": "90e9d4c5ee46ec7680d76b69d80e51ac90cbd6e5635603ad45f6076fcc0c2601",
+      "bytes": 12259
+    },
+    {
+      "path": "gate/vercel-prebuilt.mjs",
+      "sha256": "6a2956c5693966e4fa57db2b75fecd268d93d158afffd6f646973bf518ed6476",
+      "bytes": 14116
+    },
+    {
+      "path": "gate/github-permissions.mjs",
+      "sha256": "a03c1f1954a334a914ba0d6016f4222387e62828f88d9f2908ea3d01218f13ed",
+      "bytes": 3000
+    },
+    {
+      "path": "gate/ledger-connection.mjs",
+      "sha256": "289355fc121e1ad1b3b8213fa672da43de232b5b4d828f0c91bf4424e1b12548",
+      "bytes": 186669
+    },
+    {
+      "path": "gate/configuration.mjs",
+      "sha256": "6e23b1072df902af6d3625f3e733a7dbf6592138b3abc35253e841bc122466fd",
+      "bytes": 1198
+    },
+    {
+      "path": "gate/core.mjs",
+      "sha256": "b8b93cb62d9aa4fc59cdbf269abc6a0d1916130bfd25749c7d3f66610abe61bd",
+      "bytes": 5253
+    },
+    {
+      "path": "gate/unpack-prebuilt.py",
+      "sha256": "b15f6c427b4d4669abfa5b2b5642a2ab5ac244375dd54c948945827b5c5d22b0",
+      "bytes": 4547
+    },
+    {
+      "path": "gate/postgres-ledger.sql",
+      "sha256": "fae54382bc8389d5ee2678ac5d8589513a1da6cc7616f054d9d16921790ad39d",
+      "bytes": 3646
+    }
+  ]
+}

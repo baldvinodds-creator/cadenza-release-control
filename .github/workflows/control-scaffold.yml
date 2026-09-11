@@ -9,5 +9,28 @@ jobs:
   scaffold:
     runs-on: ubuntu-latest
     steps:
-      - name: Report disabled bootstrap state
-        run: echo 'Release control is not enrolled. No deployment capability is installed.'
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '22'
+      - name: Verify exact control distribution
+        run: |
+          node --input-type=module <<'JS'
+          import {readFile} from 'node:fs/promises';
+          import {createHash} from 'node:crypto';
+          const manifest=JSON.parse(await readFile('distribution-manifest.json','utf8'));
+          for(const file of manifest.files){
+            if(file.path.startsWith('/') || file.path.split('/').includes('..'))throw Error('Invalid distribution path');
+            const bytes=await readFile(file.path);
+            if(bytes.length!==file.bytes || createHash('sha256').update(bytes).digest('hex')!==file.sha256)throw Error('Control distribution changed');
+          }
+          console.log('Control distribution integrity passed. No release executed.');
+          JS
+          node --check execute-release.mjs
+          if node execute-release.mjs rehearsal > /tmp/control-denial.log 2>&1; then
+            echo 'Unenrolled invocation unexpectedly succeeded'
+            exit 1
+          fi
+          grep -q '^Protected release refused or outcome uncertain' /tmp/control-denial.log

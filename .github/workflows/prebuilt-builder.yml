@@ -1,0 +1,55 @@
+# Prepared template for the separate control repository, not active in Cadenza.
+name: Verify and attest private prebuilt artifact
+run-name: Attest release ${{ inputs.release_sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        required: true
+        type: string
+      build_run_id:
+        required: true
+        type: string
+      artifact_id:
+        required: true
+        type: string
+permissions: {}
+jobs:
+  attest:
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '22'
+      - name: Verify private source run, archive and complete standalone output
+        id: prepare
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          GH_SOURCE_READ_TOKEN: ${{ secrets.SOURCE_ARTIFACT_READ_TOKEN }}
+        run: node prepare-attestation.mjs
+      - name: Produce managed provenance over verified manifest
+        id: attest
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: ${{ steps.prepare.outputs.manifest_path }}
+      - name: Preserve public attestation envelope only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prebuilt-attestation-${{ steps.prepare.outputs.artifact_sha256 }}
+          path: ${{ steps.attest.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 30
+      # Never upload manifest contents, application output, source token or logs
+      # from private preparation to this public control repository.
+      # This job cannot approve or deploy; no deployment credential is installed.

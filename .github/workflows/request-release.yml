@@ -1,0 +1,54 @@
+# Dispatcher uses a provider-managed bot identity, never the owner's identity.
+name: Prepare automated release request
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [rehearsal, deploy]
+        default: rehearsal
+        required: true
+      release_sha:
+        type: string
+        required: true
+      bundle_sha256:
+        type: string
+        required: true
+      bundle:
+        type: string
+        required: true
+      build_run_id:
+        type: string
+        required: true
+      artifact_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: write
+jobs:
+  request:
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validate immutable request and dispatch as GitHub's bot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_JSON: ${{ toJSON(inputs) }}
+        run: |
+          node --input-type=module <<'JS'
+          import { createHash } from 'node:crypto';
+          const inputs = JSON.parse(process.env.REQUEST_JSON);
+          if (!['rehearsal', 'deploy'].includes(inputs.mode) || !/^[a-f0-9]{40}$/.test(inputs.release_sha) || !/^[a-f0-9]{64}$/.test(inputs.bundle_sha256) || !/^[1-9][0-9]*$/.test(inputs.build_run_id) || !/^[1-9][0-9]*$/.test(inputs.artifact_id) || inputs.bundle.length > 8192) throw Error('Invalid release request');
+          if (createHash('sha256').update(inputs.bundle).digest('hex') !== inputs.bundle_sha256) throw Error('Bundle changed');
+          const bundle = JSON.parse(inputs.bundle);
+          if (bundle.version !== 2 || bundle.releaseSha !== inputs.release_sha || Date.parse(bundle.expiresAt) <= Date.now()) throw Error('Wrong or expired bundle');
+          const response = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/actions/workflows/owner-release.yml/dispatches`, {
+            method: 'POST', redirect: 'error', signal: AbortSignal.timeout(30000),
+            headers: { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: 'application/vnd.github+json', 'content-type': 'application/json' },
+            body: JSON.stringify({ ref: 'main', inputs }),
+          });
+          if (response.status !== 204) throw Error('Request dispatch refused; do not retry automatically');
+          console.log(`Automated release requested for ${inputs.release_sha}. No deployment was performed.`);
+          JS
