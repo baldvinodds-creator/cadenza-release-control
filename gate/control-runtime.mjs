@@ -6645,6 +6645,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
         const args = [
           "deploy",
           "--prebuilt",
+          "--archive=tgz",
           "--prod",
           "--yes",
           "--format=json",

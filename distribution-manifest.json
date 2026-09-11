@@ -48,8 +48,8 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "ea971acd85c7c65ac4f4ea9f1b07550d069418a104053ae1d0146e9ba9b01684",
-      "bytes": 286844
+      "sha256": "81d263b0abbf5c988ae67c225b926aa9b874513c9be1bdd3ab69254a27b07292",
+      "bytes": 286871
     },
     {
       "path": "gate/github-approval.mjs",
@@ -68,8 +68,8 @@
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "4b2274fc6ea02c9c849a51c230ee26cd847fca29d4d07edc6a74f4b07196460b",
-      "bytes": 14301
+      "sha256": "e974ec959a1348a74b3c1f3f483622f08d40330dd4023972a05088f5b0c5eae8",
+      "bytes": 15407
     },
     {
       "path": "gate/github-permissions.mjs",
@@ -103,8 +103,8 @@
     },
     {
       "path": "prebuilt-cli-credential.test.mjs",
-      "sha256": "07ef694001ef1bfc0a7f02b1fc27944579ceb9433545ab1d181db05e5b971745",
-      "bytes": 1427
+      "sha256": "e12e0fb09bff2688f210802a9c4d3609375c4bb79d6aa6c05958c4bc767b698f",
+      "bytes": 2385
     }
   ]
 }
