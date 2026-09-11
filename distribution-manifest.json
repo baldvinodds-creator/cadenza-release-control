@@ -23,7 +23,7 @@
     },
     {
       "path": ".github/workflows/owner-release.yml",
-      "sha256": "5dd473732f457f4c8a72ceaa6e89f2226d57e4e744a8ce7eb02e01ada253ed52",
+      "sha256": "5ec9d2b942f4c9c84bd95e99e25a7f10cadaf70ed22eb9796616cac549ecd0d6",
       "bytes": 2836
     },
     {
@@ -48,8 +48,8 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "81d263b0abbf5c988ae67c225b926aa9b874513c9be1bdd3ab69254a27b07292",
-      "bytes": 286871
+      "sha256": "dfec3918e07fbb27bcf7b4e65f64aeb0ce0adda9f00ba0cd25fdd910c55c83a1",
+      "bytes": 289076
     },
     {
       "path": "gate/github-approval.mjs",
@@ -68,8 +68,8 @@
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "87930fd2c22e42f3ebbd26a6f7be968399bd300689b31ce7c5d2282fbceab4f4",
-      "bytes": 15434
+      "sha256": "459a918eb2e9d5660089e085ac9369eccfca00665ee316b2b8c8e9a27674b5f2",
+      "bytes": 15457
     },
     {
       "path": "gate/github-permissions.mjs",
@@ -105,6 +105,16 @@
       "path": "prebuilt-cli-credential.test.mjs",
       "sha256": "e12e0fb09bff2688f210802a9c4d3609375c4bb79d6aa6c05958c4bc767b698f",
       "bytes": 2385
+    },
+    {
+      "path": "gate/vercel-evidence.mjs",
+      "bytes": 12371,
+      "sha256": "bdf830e14e739ae4992bca2dc13021131fd52b903bed86231963cc99f9ea6f62"
+    },
+    {
+      "path": "vercel-evidence.test.mjs",
+      "bytes": 7068,
+      "sha256": "af71cdba8e5fc247983095f3339fcb55e9da1b1440ddf95862513822af1f9e97"
     }
   ]
 }

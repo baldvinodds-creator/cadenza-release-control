@@ -6424,9 +6424,10 @@ function verifyProductionRollback(input) {
 var requireThat10 = (value, message) => {
   if (!value) throw new Error(message);
 };
-function createVercelEvidenceReader({ projectId, teamId, productionHost, readToken, fetchImpl = fetch, now = Date.now }) {
+function createVercelEvidenceReader({ projectId, teamId, productionHost, readToken, fetchImpl = fetch, now = Date.now, wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), completionTimeoutMs = 45 * 6e4, pollIntervalMs = 15e3 }) {
   requireThat10(/^prj_[a-zA-Z0-9]+$/.test(projectId) && /^team_[a-zA-Z0-9]+$/.test(teamId), "Pinned Vercel target required");
   requireThat10(/^[a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,}$/.test(productionHost), "Pinned production hostname required");
+  requireThat10(Number.isInteger(completionTimeoutMs) && completionTimeoutMs > 0 && completionTimeoutMs <= 45 * 6e4 && Number.isInteger(pollIntervalMs) && pollIntervalMs > 0 && pollIntervalMs <= 6e4, "Bounded provider observation required");
   async function deployment(id) {
     requireThat10(id === productionHost || /^dpl_[a-zA-Z0-9]+$/.test(id), "Invalid deployment lookup");
     const token = await readToken();
@@ -6456,11 +6457,28 @@ function createVercelEvidenceReader({ projectId, teamId, productionHost, readTok
     },
     async verifyNew(bundle, deploymentId2, previousDeploymentUrl) {
       target(bundle);
-      const direct = await deployment(deploymentId2);
-      if (bundle.version === 2) requireThat10(direct.meta?.cadenzaArtifactSha256 === bundle.artifactSha256, "Production artifact digest mismatch");
-      await health();
-      const alias = await deployment(productionHost);
-      const verified = verifyNewProductionDeployment({ deployment: direct, aliasDeployment: alias, expectedDeploymentId: deploymentId2, expectedDeploymentUrl: direct.url, expectedProjectId: projectId, expectedTeamId: teamId, expectedReleaseSha: bundle.releaseSha, previousDeploymentId: bundle.baselineDeploymentId, previousDeploymentUrl });
+      requireThat10(deploymentId2 !== bundle.baselineDeploymentId, "Expected a new immutable deployment");
+      const deadline = now() + completionTimeoutMs;
+      let verified;
+      for (let attempt = 0; ; attempt++) {
+        const direct = await deployment(deploymentId2);
+        requireThat10((direct.id ?? direct.uid) === deploymentId2 && direct.projectId === projectId && (direct.teamId ?? direct.team?.id) === teamId && (direct.teamId === void 0 || direct.team?.id === void 0 || direct.teamId === direct.team.id) && direct.target === "production", "Pending deployment target mismatch");
+        requireThat10((direct.gitSource?.sha ?? direct.meta?.githubCommitSha) === bundle.releaseSha && (direct.gitSource?.sha === void 0 || direct.meta?.githubCommitSha === void 0 || direct.gitSource.sha === direct.meta.githubCommitSha), "Pending deployment source mismatch");
+        if (bundle.version === 2) requireThat10(direct.meta?.cadenzaArtifactSha256 === bundle.artifactSha256, "Production artifact digest mismatch");
+        requireThat10(["QUEUED", "INITIALIZING", "BUILDING", "READY"].includes(direct.readyState), "Provider deployment failed or has an unknown state");
+        if (direct.readyState === "READY") {
+          const alias = await deployment(productionHost);
+          if ((alias.id ?? alias.uid) === deploymentId2) {
+            verified = verifyNewProductionDeployment({ deployment: direct, aliasDeployment: alias, expectedDeploymentId: deploymentId2, expectedDeploymentUrl: direct.url, expectedProjectId: projectId, expectedTeamId: teamId, expectedReleaseSha: bundle.releaseSha, previousDeploymentId: bundle.baselineDeploymentId, previousDeploymentUrl });
+            if (bundle.version === 2) requireThat10(alias.meta?.cadenzaArtifactSha256 === bundle.artifactSha256, "Production alias artifact digest mismatch");
+            await health();
+            break;
+          }
+          verifyProductionRollback({ deployment: alias, aliasDeployment: alias, expectedDeploymentId: bundle.baselineDeploymentId, expectedDeploymentUrl: previousDeploymentUrl, expectedProjectId: projectId, expectedTeamId: teamId, expectedReleaseSha: bundle.baselineSha });
+        }
+        requireThat10(now() < deadline && attempt < Math.ceil(completionTimeoutMs / pollIntervalMs), "Provider completion timed out; retain claim and reconcile existing deployment");
+        await wait(Math.min(pollIntervalMs, deadline - now()));
+      }
       return { deploymentId: verified.deploymentId, releaseSha: verified.releaseSha, projectId, teamId, environment: "production", ...bundle.version === 2 ? { artifactSha256: bundle.artifactSha256 } : {} };
     }
   };
@@ -6646,6 +6664,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
           "deploy",
           "--prebuilt",
           "--archive=tgz",
+          "--no-wait",
           "--prod",
           "--yes",
           "--format=json",
