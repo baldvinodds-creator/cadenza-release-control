@@ -235,6 +235,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
           "deploy",
           "--prebuilt",
           "--archive=tgz",
+          "--no-wait",
           "--prod",
           "--yes",
           "--format=json",

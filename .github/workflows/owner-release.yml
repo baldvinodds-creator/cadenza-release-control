@@ -32,7 +32,7 @@ jobs:
   release:
     if: github.ref == 'refs/heads/main' && github.run_attempt == 1
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     environment: owner-release
     permissions:
       contents: read
