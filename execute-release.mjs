@@ -83,7 +83,17 @@ try {
     await writeFile(join(process.env.RUNNER_TEMP, 'owner-release-receipt.json'), JSON.stringify(receipt), { flag: 'wx', mode: 0o600 });
     console.log(JSON.stringify(receipt));
   }
-} catch {
+} catch (error) {
+  const safeReasons = new Set([
+    'Prebuilt upload failed or outcome is uncertain; inspect provider, do not retry approval',
+    'Provider attestation verification failed',
+    'Technical collection exceeded freshness window',
+    'Fresh independent evidence required',
+    'Replayed approval or production lease unavailable',
+    'Live production receipt mismatch',
+    'Deployment audit incomplete; lease remains held',
+  ]);
+  if (safeReasons.has(error?.message)) console.error(`Known gate refusal: ${error.message}`);
   // Never echo child/provider errors containing signed URLs, env or credentials.
   console.error(`Protected release refused or outcome uncertain. Phase: ${phase}. Preserve evidence; do not automatically retry.`);
   process.exitCode = 1;
