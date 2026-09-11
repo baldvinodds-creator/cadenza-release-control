@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createControlReleaseRuntime } from './gate/control-runtime.mjs';
-import { createGithubApprovalReader } from './gate/github-approval.mjs';
+import { createGithubReleaseRunReader } from './gate/github-approval.mjs';
 import { createArtifactProvenanceVerifier, createGhAttestationRunner } from './gate/artifact-provenance.mjs';
 import { prepareArtifactForAttestation } from './gate/prepare-artifact.mjs';
 import { createPrebuiltCliRunner } from './gate/vercel-prebuilt.mjs';
@@ -35,7 +35,7 @@ try {
   };
   const readControlJson = api(policy.controlRepository, process.env.GITHUB_TOKEN);
   const readSourceJson = api(policy.repository, process.env.GH_SOURCE_READ_TOKEN);
-  const approval = await createGithubApprovalReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
+  const approval = await createGithubReleaseRunReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
   const workRoot = await mkdtemp(join(process.env.RUNNER_TEMP, 'approved-artifact-'));
   const prepared = await prepareArtifactForAttestation({
     policy: { repository: policy.repository, builderWorkflow: '.github/workflows/owner-prebuilt-build.yml', builderWorkflowSha256: config.reviewedBuilderWorkflowSha256, toolchainLockSha256: config.reviewedToolchainLockSha256 },
@@ -53,9 +53,9 @@ try {
   parseBundle(rawBundle, policy, Date.now());
   if (mode === 'rehearsal') {
     requireThat(!process.env.VERCEL_RELEASE_TOKEN && !process.env.RELEASE_LEDGER_URL && !process.env.CENSUS_DATABASE_URL, 'Rehearsal received production credentials');
-    const rechecked = await createGithubApprovalReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
+    const rechecked = await createGithubReleaseRunReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
     requireThat(JSON.stringify(rechecked) === JSON.stringify(approval), 'Approval changed during rehearsal');
-    const receipt = { mode: 'OWNER_APPROVAL_AND_ARTIFACT_REHEARSAL', ...approval, artifactSha256: verifiedArtifact.artifactSha256, deploymentPerformed: false };
+    const receipt = { mode: 'AUTOMATED_AUTHORIZATION_AND_ARTIFACT_REHEARSAL', ...approval, artifactSha256: verifiedArtifact.artifactSha256, deploymentPerformed: false };
     await writeFile(join(process.env.RUNNER_TEMP, 'owner-release-receipt.json'), JSON.stringify(receipt), { flag: 'wx', mode: 0o600 });
     console.log(JSON.stringify(receipt));
   } else {

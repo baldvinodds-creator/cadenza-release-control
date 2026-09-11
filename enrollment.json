@@ -14,7 +14,7 @@
   "dispatchBotId": 41898282,
   "gateShaEnvironmentVariable": "OWNER_GATE_SHA",
   "runtimePolicy": {
-    "governanceModel": "SINGLE_OWNER_CONTROLLED",
+    "governanceModel": "AUTOMATED_OWNER_POLICY",
     "repository": "baldvinodds-creator/cadenza",
     "controlRepository": "baldvinodds-creator/cadenza-release-control",
     "ownerId": 250909943,
@@ -27,7 +27,7 @@
     "teamId": "team_OAT9NZVgy2CjvR4xPYI1G904",
     "productionHost": "cadenza.work",
     "environment": "production",
-    "policyVersion": "single-owner-v1",
+    "policyVersion": "automated-v1",
     "workflowSha256": "e0916b16453dff4711416ca5751bdc899f6f31de2ea8b6e6526b827906aa6752",
     "requiredChecks": [
       "Lint \u00b7 Typecheck \u00b7 Unit tests",
@@ -50,5 +50,5 @@
     "productionHost": "cadenza.work"
   },
   "liveOwnerRehearsalReceipt": null,
-  "governanceModel": "SINGLE_OWNER_CONTROLLED"
+  "governanceModel": "AUTOMATED_OWNER_POLICY"
 }

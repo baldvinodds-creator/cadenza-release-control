@@ -3,18 +3,18 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "f0ae98016ae48b6fe026a2a4ae7cddf2f57823958e2f76049df8994096453604",
-      "bytes": 5359
+      "sha256": "41d13ca841c84b61366a8b5ab835c7a9bab8081a1caf7add48caaec663807c20",
+      "bytes": 5412
     },
     {
       "path": "enrollment.json",
-      "sha256": "675a37a2546a2e34953c03479ca92a42b613c52a14db100252f047c8918587fa",
-      "bytes": 2245
+      "sha256": "4033d856150f76ab4576e7b588ade713482b1dfbcbce3033f2a5e89b8f958508",
+      "bytes": 2240
     },
     {
       "path": "execute-release.mjs",
-      "sha256": "4405220e9403e2581143b3b125bc94af245488a396678b582f959e7380ef6b70",
-      "bytes": 7146
+      "sha256": "a7e24ffab8744c9bbed0b0ce86ff731dd00369ee65dd93a08fe09a8b4799dfc9",
+      "bytes": 7161
     },
     {
       "path": "prepare-attestation.mjs",
@@ -23,13 +23,13 @@
     },
     {
       "path": ".github/workflows/owner-release.yml",
-      "sha256": "b426a07998a2a399c94a543bd5222278db0d8940b7f6dafb9fc946cdd715e366",
-      "bytes": 2823
+      "sha256": "5dd473732f457f4c8a72ceaa6e89f2226d57e4e744a8ce7eb02e01ada253ed52",
+      "bytes": 2836
     },
     {
       "path": ".github/workflows/request-release.yml",
-      "sha256": "6c0e64ad29f8ab4b5753f44f306a1883dc56cdb64665b9c3107b3122505d147b",
-      "bytes": 2469
+      "sha256": "f9a400dc05f8f8bd025e170626b97409208e667b661fa0280afa07bd49f88267",
+      "bytes": 2475
     },
     {
       "path": ".github/workflows/prebuilt-builder.yml",
@@ -48,33 +48,33 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "4be825eae43b33c1dfee52ad00b6732167f8a9c4e403be16e84348539e6a87fe",
-      "bytes": 1238604
+      "sha256": "9d88a04930e07b2eb41df8dae2cbaa9f93f0a45a56cafd40b168b3cfaf4698e6",
+      "bytes": 286899
     },
     {
       "path": "gate/github-approval.mjs",
-      "sha256": "bc992843a764c0c3badb64384630533c2ef44ba4a243a703cf3617256e7c9792",
-      "bytes": 961023
+      "sha256": "995baa61d5428d2664e0562bc5d9439c2bdd1e1bcda04ab458ced7a5b4c57fa0",
+      "bytes": 8305
     },
     {
       "path": "gate/artifact-provenance.mjs",
-      "sha256": "936048eb53f4fb23ef86253ac9c99247e21da94906f096f6fa5b4b58da9171be",
-      "bytes": 957298
+      "sha256": "a007a1039d44ea5ef8ea2028ce7e883614c93a091b953b5712eef658496ee794",
+      "bytes": 3781
     },
     {
       "path": "gate/prepare-artifact.mjs",
-      "sha256": "c99bb8039dc836e1b8c116d1f5e11aceefc9c3e89d6302c18196e46c0c8a9c4b",
-      "bytes": 965785
+      "sha256": "90e9d4c5ee46ec7680d76b69d80e51ac90cbd6e5635603ad45f6076fcc0c2601",
+      "bytes": 12259
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "3481d547093c53d5163bec7cda8f6152b8028e20eb6b576fdc41df210af9fa9e",
-      "bytes": 967564
+      "sha256": "6a2956c5693966e4fa57db2b75fecd268d93d158afffd6f646973bf518ed6476",
+      "bytes": 14116
     },
     {
       "path": "gate/github-permissions.mjs",
-      "sha256": "3cebcf2893a8d3dbf3dec4456cf9d671a23b968113e706e8d17b3fa43c202ce1",
-      "bytes": 3001
+      "sha256": "a03c1f1954a334a914ba0d6016f4222387e62828f88d9f2908ea3d01218f13ed",
+      "bytes": 3000
     },
     {
       "path": "gate/ledger-connection.mjs",
@@ -82,9 +82,14 @@
       "bytes": 186669
     },
     {
+      "path": "gate/configuration.mjs",
+      "sha256": "6e23b1072df902af6d3625f3e733a7dbf6592138b3abc35253e841bc122466fd",
+      "bytes": 1198
+    },
+    {
       "path": "gate/core.mjs",
-      "sha256": "248b8857e13175326433f758087c29c8fd5d7aee5b69ab4e008195c873591e6f",
-      "bytes": 997335
+      "sha256": "b8b93cb62d9aa4fc59cdbf269abc6a0d1916130bfd25749c7d3f66610abe61bd",
+      "bytes": 5253
     },
     {
       "path": "gate/unpack-prebuilt.py",
@@ -95,11 +100,6 @@
       "path": "gate/postgres-ledger.sql",
       "sha256": "fae54382bc8389d5ee2678ac5d8589513a1da6cc7616f054d9d16921790ad39d",
       "bytes": 3646
-    },
-    {
-      "path": "gate/configuration.mjs",
-      "sha256": "0ee473300c0d9386f5303bc3bf8a08740d34f9d75671154df227d85e8141eb80",
-      "bytes": 954715
     }
   ]
 }

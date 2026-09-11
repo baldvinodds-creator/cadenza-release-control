@@ -1,5 +1,5 @@
 # Dispatcher uses a provider-managed bot identity, never the owner's identity.
-name: Prepare owner approval request
+name: Prepare automated release request
 on:
   workflow_dispatch:
     inputs:
@@ -50,5 +50,5 @@ jobs:
             body: JSON.stringify({ ref: 'main', inputs }),
           });
           if (response.status !== 204) throw Error('Request dispatch refused; do not retry automatically');
-          console.log(`Owner approval requested for ${inputs.release_sha}. No deployment was performed.`);
+          console.log(`Automated release requested for ${inputs.release_sha}. No deployment was performed.`);
           JS

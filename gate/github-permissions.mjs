@@ -36,7 +36,7 @@ function assertEnrollmentPermissionEvidence(evidence) {
   return true;
 }
 function assertOwnerControlledPolicy(policy) {
-  requireThat(policy?.governanceModel === "SINGLE_OWNER_CONTROLLED", "Owner-controlled governance is not enrolled");
+  requireThat(policy?.governanceModel === "AUTOMATED_OWNER_POLICY", "Owner-controlled governance is not enrolled");
   requireThat(Number.isSafeInteger(policy.ownerId) && policy.ownerId > 0, "Explicit release owner required");
   requireThat(policy.controlRepository !== policy.repository && policy.approvalEnvironment === "owner-release", "Protected release boundary required");
   return true;

@@ -1,5 +1,5 @@
 # Prepared template. No production credentials have been attached.
-name: Owner-approved prebuilt release
+name: Automated protected prebuilt release
 run-name: Release ${{ inputs.release_sha }} / ${{ inputs.bundle_sha256 }}
 on:
   workflow_dispatch:
@@ -50,7 +50,7 @@ jobs:
         if: inputs.mode == 'deploy'
         working-directory: toolchain
         run: npm ci --ignore-scripts --no-fund
-      - name: Verify exact native approval and run the protected path
+      - name: Verify exact automated authorization and run the protected path
         env:
           RELEASE_MODE: ${{ inputs.mode }}
           RELEASE_SHA: ${{ inputs.release_sha }}
