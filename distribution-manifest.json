@@ -1,15 +1,15 @@
 {
-  "scope": "DISABLED_CONTROL_REPOSITORY_REVIEW",
+  "scope": "AUTOMATED_SINGLE_ADMIN_RELEASE_GATE",
   "files": [
     {
       "path": "README.md",
-      "sha256": "41d13ca841c84b61366a8b5ab835c7a9bab8081a1caf7add48caaec663807c20",
-      "bytes": 5412
+      "sha256": "3b5753577e71a3517b817db38c7036b2cafdbf9e010429f768a44b2e2211fb26",
+      "bytes": 4979
     },
     {
       "path": "enrollment.json",
-      "sha256": "38cd2160d080643b96490a5fc47df96e8c8bbd3c83c528d6e8a71bcd760cdee3",
-      "bytes": 2231
+      "sha256": "5e153cf9425773ca4baba4506e633e0cd5438b6054a64c01121d6293d01e0b22",
+      "bytes": 2229
     },
     {
       "path": "execute-release.mjs",

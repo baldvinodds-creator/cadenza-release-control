@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "enabled": false,
-  "deploymentCredentialsAttached": false,
+  "enabled": true,
+  "deploymentCredentialsAttached": true,
   "humanApproversRequired": 0,
   "secondHumanCustodianRequired": false,
   "sourceRepository": "baldvinodds-creator/cadenza",
