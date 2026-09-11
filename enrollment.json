@@ -2,7 +2,7 @@
   "version": 1,
   "enabled": false,
   "deploymentCredentialsAttached": false,
-  "humanApproversRequired": 1,
+  "humanApproversRequired": 0,
   "secondHumanCustodianRequired": false,
   "sourceRepository": "baldvinodds-creator/cadenza",
   "sourceRepositoryId": 1159314083,
@@ -41,7 +41,7 @@
     "database": "release_control",
     "role": "cadenza_owner_release_runtime"
   },
-  "reviewedBuilderWorkflowSha256": "4d940e1ca5c7e4c018cdfdbb85225a4037dd271158e09c12d8ac1a2eaf19f8a5",
+  "reviewedBuilderWorkflowSha256": "d3c63c6823026d99bdb86d734fc33bf15b60ac7e6743440fc04aaa2f9145cd30",
   "reviewedToolchainLockSha256": "5de8f3c89195d5266c92a845d2f82a15cb94a80515dea68e8d4f3128ad7c770a",
   "target": {
     "environment": "production",
@@ -49,6 +49,6 @@
     "teamId": "team_OAT9NZVgy2CjvR4xPYI1G904",
     "productionHost": "cadenza.work"
   },
-  "liveOwnerRehearsalReceipt": null,
-  "governanceModel": "AUTOMATED_OWNER_POLICY"
+  "governanceModel": "AUTOMATED_OWNER_POLICY",
+  "ownerAdministrators": 1
 }
