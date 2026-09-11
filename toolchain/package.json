@@ -1,0 +1,8 @@
+{
+  "name": "cadenza-prebuilt-toolchain",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "vercel": "50.38.2"
+  }
+}

@@ -1,0 +1,1 @@
+This disabled distribution was prepared from Cadenza source commit `d0176a03e0cb9bed2fc9922a8113025b0d9aa837`, under draft PR #1147. The distribution manifest binds every packaged file. Source review and CI are required before enrollment. No production credentials are attached. Existing branch protection and CODEOWNERS are unchanged.

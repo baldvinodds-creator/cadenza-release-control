@@ -1,0 +1,75 @@
+# Prepared template. No production credentials have been attached.
+name: Owner-approved prebuilt release
+run-name: Release ${{ inputs.release_sha }} / ${{ inputs.bundle_sha256 }}
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [rehearsal, deploy]
+        default: rehearsal
+        required: true
+      release_sha:
+        type: string
+        required: true
+      bundle_sha256:
+        type: string
+        required: true
+      bundle:
+        type: string
+        required: true
+      build_run_id:
+        type: string
+        required: true
+      artifact_id:
+        type: string
+        required: true
+permissions: {}
+concurrency:
+  group: cadenza-protected-production-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: owner-release
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+      attestations: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: '22'
+      - name: Install reviewed upload toolchain without lifecycle scripts
+        if: inputs.mode == 'deploy'
+        working-directory: toolchain
+        run: npm ci --ignore-scripts --no-fund
+      - name: Verify exact native approval and run the protected path
+        env:
+          RELEASE_MODE: ${{ inputs.mode }}
+          RELEASE_SHA: ${{ inputs.release_sha }}
+          RELEASE_BUNDLE: ${{ inputs.bundle }}
+          RELEASE_BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+          OWNER_GATE_SHA: ${{ vars.OWNER_GATE_SHA }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_SOURCE_READ_TOKEN: ${{ secrets.SOURCE_ARTIFACT_READ_TOKEN }}
+          VERCEL_RELEASE_TOKEN: ${{ inputs.mode == 'deploy' && secrets.VERCEL_RELEASE_TOKEN || '' }}
+          RELEASE_LEDGER_URL: ${{ inputs.mode == 'deploy' && secrets.RELEASE_LEDGER_URL || '' }}
+          CENSUS_DATABASE_URL: ${{ inputs.mode == 'deploy' && secrets.CENSUS_DATABASE_URL || '' }}
+          PRODUCTION_OBSERVER_POLICY: ${{ inputs.mode == 'deploy' && secrets.PRODUCTION_OBSERVER_POLICY || '' }}
+        run: node execute-release.mjs "$RELEASE_MODE"
+      - name: Preserve verified public receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-release-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/owner-release-receipt.json
+          if-no-files-found: error
+          retention-days: 90

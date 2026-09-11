@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "enabled": false,
+  "deploymentCredentialsAttached": false,
+  "humanApproversRequired": 1,
+  "secondHumanCustodianRequired": false,
+  "sourceRepository": "baldvinodds-creator/cadenza",
+  "sourceRepositoryId": 1159314083,
+  "controlRepositoryId": 1365778946,
+  "controlRepository": "baldvinodds-creator/cadenza-release-control",
+  "approvalEnvironment": "owner-release",
+  "approvalEnvironmentId": 21718480506,
+  "approvalOwnerId": null,
+  "engineeringIdentityId": null,
+  "dispatchBotId": null,
+  "gateShaEnvironmentVariable": "OWNER_GATE_SHA",
+  "runtimePolicy": null,
+  "productionPolicySha256": null,
+  "ledgerPolicy": null,
+  "reviewedBuilderWorkflowSha256": null,
+  "reviewedToolchainLockSha256": null,
+  "target": {
+    "environment": "production",
+    "projectId": "prj_psXOHzblBOTcFjjEOUq5DygtyWQU",
+    "teamId": "team_OAT9NZVgy2CjvR4xPYI1G904",
+    "productionHost": "cadenza.work"
+  },
+  "livePermissionEvidence": null,
+  "liveOwnerRehearsalReceipt": null
+}
