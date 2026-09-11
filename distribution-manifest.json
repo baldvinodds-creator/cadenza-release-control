@@ -48,8 +48,8 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "9d88a04930e07b2eb41df8dae2cbaa9f93f0a45a56cafd40b168b3cfaf4698e6",
-      "bytes": 286899
+      "sha256": "ea971acd85c7c65ac4f4ea9f1b07550d069418a104053ae1d0146e9ba9b01684",
+      "bytes": 286844
     },
     {
       "path": "gate/github-approval.mjs",
@@ -58,8 +58,8 @@
     },
     {
       "path": "gate/artifact-provenance.mjs",
-      "sha256": "a007a1039d44ea5ef8ea2028ce7e883614c93a091b953b5712eef658496ee794",
-      "bytes": 3781
+      "sha256": "d1ef6c487c3cf2ac8cb780ad18fba31b1d7fd1b99a4588f67aa75dfa2355ba80",
+      "bytes": 3726
     },
     {
       "path": "gate/prepare-artifact.mjs",
