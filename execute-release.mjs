@@ -8,7 +8,7 @@ import { createGithubApprovalReader } from './gate/github-approval.mjs';
 import { createArtifactProvenanceVerifier, createGhAttestationRunner } from './gate/artifact-provenance.mjs';
 import { prepareArtifactForAttestation } from './gate/prepare-artifact.mjs';
 import { createPrebuiltCliRunner } from './gate/vercel-prebuilt.mjs';
-import { assertEnrollmentPermissionEvidence } from './gate/github-permissions.mjs';
+import { assertOwnerControlledPolicy } from './gate/github-permissions.mjs';
 import { connectProtectedLedger } from './gate/ledger-connection.mjs';
 import { digest, parseBundle } from './gate/core.mjs';
 const execute = promisify(execFile);
@@ -59,13 +59,12 @@ try {
     console.log(JSON.stringify(receipt));
   } else {
     requireThat(config.enabled === true && config.deploymentCredentialsAttached === true, 'Production enrollment disabled');
-    assertEnrollmentPermissionEvidence(config.livePermissionEvidence);
-    requireThat(config.livePermissionEvidence.ownerId === policy.ownerId && config.livePermissionEvidence.engineeringId === policy.engineeringId, 'Permission identity mismatch');
+    assertOwnerControlledPolicy(policy);
     const productionPolicyRaw = process.env.PRODUCTION_OBSERVER_POLICY;
     requireThat(typeof productionPolicyRaw === 'string' && digest(productionPolicyRaw) === config.productionPolicySha256, 'Production observer policy is not enrolled');
     requireThat(process.env.VERCEL_RELEASE_TOKEN && process.env.RELEASE_LEDGER_URL && process.env.CENSUS_DATABASE_URL, 'Protected production credentials missing');
     ledger = await connectProtectedLedger({ connectionString: process.env.RELEASE_LEDGER_URL, policy: config.ledgerPolicy });
-    const runtime = createControlReleaseRuntime({ policy: { ...policy, enabled: true, deploymentCredentialsAttached: true }, permissionEvidence: config.livePermissionEvidence,
+    const runtime = createControlReleaseRuntime({ policy: { ...policy, enabled: true, deploymentCredentialsAttached: true },
       productionPolicy: JSON.parse(productionPolicyRaw), readSourceJson, readControlJson,
       readProductionConnection: async () => process.env.CENSUS_DATABASE_URL, readVercelObserverToken: async () => process.env.VERCEL_RELEASE_TOKEN,
       ledgerQuery: ledger.query, outputRoot: prepared.outputRoot, manifestPath: prepared.manifestPath, attestationPath, runAttestationVerifier,

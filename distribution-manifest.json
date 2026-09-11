@@ -3,18 +3,18 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "2fd2f3b234099c2b2cdd29d5936ade06e27acfd2578c31c18d52f137f3a1b7d5",
-      "bytes": 6261
+      "sha256": "f0ae98016ae48b6fe026a2a4ae7cddf2f57823958e2f76049df8994096453604",
+      "bytes": 5359
     },
     {
       "path": "enrollment.json",
-      "sha256": "6ef293d919bffba43b25393aa7bf98be76995809c2242d3fd7f2b56b3dc2ceac",
-      "bytes": 989
+      "sha256": "6e5bcb632d6c02d299e4d0757ed14c86d088aaf23232f59d7721ff135e52524d",
+      "bytes": 975
     },
     {
       "path": "execute-release.mjs",
-      "sha256": "f297bdbb1131da252389629c682d24821f95d3b68ae931e89f75bae59b505f24",
-      "bytes": 7499
+      "sha256": "5faebb6e411fbb04b57cbf774b8134a8b0b0dcedafc312600631ff08b55b7fe2",
+      "bytes": 7232
     },
     {
       "path": "prepare-attestation.mjs",
@@ -48,8 +48,8 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "08ac980812e20c52830eab41dafa05fc556e4e76616c3f67585ffb9e5205297f",
-      "bytes": 1239161
+      "sha256": "4be825eae43b33c1dfee52ad00b6732167f8a9c4e403be16e84348539e6a87fe",
+      "bytes": 1238604
     },
     {
       "path": "gate/github-approval.mjs",
@@ -73,8 +73,8 @@
     },
     {
       "path": "gate/github-permissions.mjs",
-      "sha256": "bc480ac406a267cf815e1ef4927b8e768d4342db73d685a2284f1cb76118c794",
-      "bytes": 2527
+      "sha256": "3cebcf2893a8d3dbf3dec4456cf9d671a23b968113e706e8d17b3fa43c202ce1",
+      "bytes": 3001
     },
     {
       "path": "gate/ledger-connection.mjs",

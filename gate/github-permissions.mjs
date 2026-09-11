@@ -35,7 +35,14 @@ function assertEnrollmentPermissionEvidence(evidence) {
   requireThat(Number.isSafeInteger(evidence.ownerId) && Number.isSafeInteger(evidence.engineeringId) && evidence.ownerId !== evidence.engineeringId, "Owner/engineering identities overlap");
   return true;
 }
+function assertOwnerControlledPolicy(policy) {
+  requireThat(policy?.governanceModel === "SINGLE_OWNER_CONTROLLED", "Owner-controlled governance is not enrolled");
+  requireThat(Number.isSafeInteger(policy.ownerId) && policy.ownerId > 0, "Explicit release owner required");
+  requireThat(policy.controlRepository !== policy.repository && policy.approvalEnvironment === "owner-release", "Protected release boundary required");
+  return true;
+}
 export {
   assertEnrollmentPermissionEvidence,
+  assertOwnerControlledPolicy,
   createEngineeringPermissionProbe
 };

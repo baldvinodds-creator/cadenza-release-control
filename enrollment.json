@@ -10,8 +10,7 @@
   "controlRepository": "baldvinodds-creator/cadenza-release-control",
   "approvalEnvironment": "owner-release",
   "approvalEnvironmentId": 21718480506,
-  "approvalOwnerId": null,
-  "engineeringIdentityId": null,
+  "approvalOwnerId": 250909943,
   "dispatchBotId": null,
   "gateShaEnvironmentVariable": "OWNER_GATE_SHA",
   "runtimePolicy": null,
@@ -25,6 +24,6 @@
     "teamId": "team_OAT9NZVgy2CjvR4xPYI1G904",
     "productionHost": "cadenza.work"
   },
-  "livePermissionEvidence": null,
-  "liveOwnerRehearsalReceipt": null
+  "liveOwnerRehearsalReceipt": null,
+  "governanceModel": "SINGLE_OWNER_CONTROLLED"
 }

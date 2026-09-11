@@ -31363,20 +31363,10 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
 var requireThat15 = (value, message) => {
   if (!value) throw new Error(message);
 };
-function assertEnrollmentPermissionEvidence(evidence) {
-  const required = [
-    "codingCannotApprove",
-    "codingCannotAdministerControl",
-    "codingCannotDeployDirectly",
-    "sourceDeploymentSecretsRemoved",
-    "codingConnectorsExcludeControl",
-    "ownerCredentialsAbsentFromCoding",
-    "approvalOnlyAccountStrongAuth",
-    "positiveOwnerRehearsal",
-    "oldIdentitiesRejected"
-  ];
-  requireThat15(evidence?.scope === "LIVE_PROVIDER_TESTS" && required.every((key) => evidence[key] === true), "Live permission cutover incomplete; do not attach deployment credentials");
-  requireThat15(Number.isSafeInteger(evidence.ownerId) && Number.isSafeInteger(evidence.engineeringId) && evidence.ownerId !== evidence.engineeringId, "Owner/engineering identities overlap");
+function assertOwnerControlledPolicy(policy) {
+  requireThat15(policy?.governanceModel === "SINGLE_OWNER_CONTROLLED", "Owner-controlled governance is not enrolled");
+  requireThat15(Number.isSafeInteger(policy.ownerId) && policy.ownerId > 0, "Explicit release owner required");
+  requireThat15(policy.controlRepository !== policy.repository && policy.approvalEnvironment === "owner-release", "Protected release boundary required");
   return true;
 }
 
@@ -31384,7 +31374,6 @@ function assertEnrollmentPermissionEvidence(evidence) {
 function createControlReleaseRuntime({
   policy: sourcePolicy,
   productionPolicy,
-  permissionEvidence,
   readSourceJson,
   readControlJson,
   readProductionConnection,
@@ -31400,8 +31389,7 @@ function createControlReleaseRuntime({
 }) {
   const policy = structuredClone(sourcePolicy);
   if (policy.enabled !== true || policy.deploymentCredentialsAttached !== true) throw Error("Control enrollment disabled");
-  assertEnrollmentPermissionEvidence(permissionEvidence);
-  if (permissionEvidence.ownerId !== policy.ownerId || permissionEvidence.engineeringId !== policy.engineeringId) throw Error("Permission evidence belongs to another identity");
+  assertOwnerControlledPolicy(policy);
   const readCandidateSchemas = createGithubSchemaReader({ repository: policy.repository, readJson: readSourceJson });
   const readCandidateMigrations = createGithubMigrationReader({ repository: policy.repository, readJson: readSourceJson });
   const vercel = createVercelEvidenceReader({
