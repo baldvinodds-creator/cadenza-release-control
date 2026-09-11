@@ -41,7 +41,7 @@
     "database": "release_control",
     "role": "cadenza_owner_release_runtime"
   },
-  "reviewedBuilderWorkflowSha256": "d3c63c6823026d99bdb86d734fc33bf15b60ac7e6743440fc04aaa2f9145cd30",
+  "reviewedBuilderWorkflowSha256": "6ef76c86099d9b8b14ffe01acda1ea0a23b42bbd5c657da9e259c527eac1f0bc",
   "reviewedToolchainLockSha256": "5de8f3c89195d5266c92a845d2f82a15cb94a80515dea68e8d4f3128ad7c770a",
   "target": {
     "environment": "production",

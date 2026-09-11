@@ -8,7 +8,7 @@
     },
     {
       "path": "enrollment.json",
-      "sha256": "5e153cf9425773ca4baba4506e633e0cd5438b6054a64c01121d6293d01e0b22",
+      "sha256": "a7685cb5abb294a192a04692caec70ca6cf256dcf01a2096155f6d05485205fb",
       "bytes": 2229
     },
     {
@@ -48,8 +48,8 @@
     },
     {
       "path": "gate/control-runtime.mjs",
-      "sha256": "dfec3918e07fbb27bcf7b4e65f64aeb0ce0adda9f00ba0cd25fdd910c55c83a1",
-      "bytes": 289076
+      "sha256": "d51d34e2b223b6165354d87458178d8597419073d00af02dd2a7d73e223f32ca",
+      "bytes": 290335
     },
     {
       "path": "gate/github-approval.mjs",
@@ -58,18 +58,18 @@
     },
     {
       "path": "gate/artifact-provenance.mjs",
-      "sha256": "d1ef6c487c3cf2ac8cb780ad18fba31b1d7fd1b99a4588f67aa75dfa2355ba80",
-      "bytes": 3726
+      "sha256": "39303f3a01c3ca65f041e4b8c52e144d1d590b71389f9d5370b12f880d6d999d",
+      "bytes": 3851
     },
     {
       "path": "gate/prepare-artifact.mjs",
-      "sha256": "90e9d4c5ee46ec7680d76b69d80e51ac90cbd6e5635603ad45f6076fcc0c2601",
-      "bytes": 12259
+      "sha256": "4d982b8608084b575709112db6439c112380c1b0fb557f2b58fdbc67ad92bc05",
+      "bytes": 13345
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "459a918eb2e9d5660089e085ac9369eccfca00665ee316b2b8c8e9a27674b5f2",
-      "bytes": 15457
+      "sha256": "b27ca9b83951136fc6ff362bac4fdd08db133b831303972483a31ec3a14d0ea9",
+      "bytes": 16566
     },
     {
       "path": "gate/github-permissions.mjs",
@@ -93,8 +93,8 @@
     },
     {
       "path": "gate/unpack-prebuilt.py",
-      "sha256": "b15f6c427b4d4669abfa5b2b5642a2ab5ac244375dd54c948945827b5c5d22b0",
-      "bytes": 4547
+      "sha256": "fab76dedb0bfadbadad4e4f7afded2180b9769c5304176668a08add63ea02600",
+      "bytes": 6241
     },
     {
       "path": "gate/postgres-ledger.sql",
@@ -115,6 +115,26 @@
       "path": "vercel-evidence.test.mjs",
       "bytes": 7068,
       "sha256": "af71cdba8e5fc247983095f3339fcb55e9da1b1440ddf95862513822af1f9e97"
+    },
+    {
+      "path": "gate/prebuilt-artifact.mjs",
+      "bytes": 5959,
+      "sha256": "c2da230dc5b22c2d87089cbb1cd3d0242e62a8473f31ceacd11c7948e14548fd"
+    },
+    {
+      "path": "gate/unpack-prebuilt.test.py",
+      "bytes": 3881,
+      "sha256": "03e1b0119a1292a783f6a3abb84d08b938581f35e42e5575ed32608bb968881a"
+    },
+    {
+      "path": "prebuilt-artifact.test.mjs",
+      "bytes": 3290,
+      "sha256": "2e3bc842bb215447d6711584f89b0ae3399919f656cf55e40346baf01a048dd8"
+    },
+    {
+      "path": "vercel-prebuilt.test.mjs",
+      "bytes": 4664,
+      "sha256": "8e9f09c0eff909ddcd04a55807f5215dcafdb1137a929656b8bc25ba3131f93f"
     }
   ]
 }

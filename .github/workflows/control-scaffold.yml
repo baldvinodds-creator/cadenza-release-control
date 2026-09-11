@@ -29,7 +29,8 @@ jobs:
           console.log('Control distribution integrity passed. No release executed.');
           JS
           node --check execute-release.mjs
-          node --test prebuilt-cli-credential.test.mjs vercel-evidence.test.mjs
+          node --test prebuilt-cli-credential.test.mjs vercel-evidence.test.mjs prebuilt-artifact.test.mjs vercel-prebuilt.test.mjs
+          python3 gate/unpack-prebuilt.test.py
           if node execute-release.mjs rehearsal > /tmp/control-denial.log 2>&1; then
             echo 'Unenrolled invocation unexpectedly succeeded'
             exit 1

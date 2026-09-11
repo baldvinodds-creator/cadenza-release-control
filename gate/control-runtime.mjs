@@ -3076,7 +3076,7 @@ var require_dist = __commonJS({
     function parse(stream, callback) {
       const parser = new parser_1.Parser();
       stream.on("data", (buffer) => parser.parse(buffer, callback));
-      return new Promise((resolve) => stream.on("end", () => resolve()));
+      return new Promise((resolve2) => stream.on("end", () => resolve2()));
     }
   }
 });
@@ -3841,12 +3841,12 @@ var require_client = __commonJS({
           this._connect(callback);
           return;
         }
-        return new this._Promise((resolve, reject) => {
+        return new this._Promise((resolve2, reject) => {
           this._connect((error) => {
             if (error) {
               reject(error);
             } else {
-              resolve(this);
+              resolve2(this);
             }
           });
         });
@@ -4228,8 +4228,8 @@ var require_client = __commonJS({
         } else {
           query = new Query2(config, values, callback);
           if (!query.callback) {
-            result = new this._Promise((resolve, reject) => {
-              query.callback = (err, res) => err ? reject(err) : resolve(res);
+            result = new this._Promise((resolve2, reject) => {
+              query.callback = (err, res) => err ? reject(err) : resolve2(res);
             }).catch((err) => {
               Error.captureStackTrace(err);
               throw err;
@@ -4320,8 +4320,8 @@ var require_client = __commonJS({
         if (cb) {
           this.connection.once("end", cb);
         } else {
-          return new this._Promise((resolve) => {
-            this.connection.once("end", resolve);
+          return new this._Promise((resolve2) => {
+            this.connection.once("end", resolve2);
           });
         }
       }
@@ -4370,8 +4370,8 @@ var require_pg_pool = __commonJS({
       const cb = function(err, client) {
         err ? rej(err) : res(client);
       };
-      const result = new Promise2(function(resolve, reject) {
-        res = resolve;
+      const result = new Promise2(function(resolve2, reject) {
+        res = resolve2;
         rej = reject;
       }).catch((err) => {
         Error.captureStackTrace(err);
@@ -4432,7 +4432,7 @@ var require_pg_pool = __commonJS({
         if (typeof Promise2.try === "function") {
           return Promise2.try(f);
         }
-        return new Promise2((resolve) => resolve(f()));
+        return new Promise2((resolve2) => resolve2(f()));
       }
       _isFull() {
         return this._clients.length >= this.options.max;
@@ -4825,8 +4825,8 @@ var require_query2 = __commonJS({
     NativeQuery.prototype._getPromise = function() {
       if (this._promise) return this._promise;
       this._promise = new Promise(
-        function(resolve, reject) {
-          this._once("end", resolve);
+        function(resolve2, reject) {
+          this._once("end", resolve2);
           this._once("error", reject);
         }.bind(this)
       );
@@ -5005,12 +5005,12 @@ var require_client2 = __commonJS({
         this._connect(callback);
         return;
       }
-      return new this._Promise((resolve, reject) => {
+      return new this._Promise((resolve2, reject) => {
         this._connect((error) => {
           if (error) {
             reject(error);
           } else {
-            resolve(this);
+            resolve2(this);
           }
         });
       });
@@ -5034,8 +5034,8 @@ var require_client2 = __commonJS({
         query = new NativeQuery(config, values, callback);
         if (!query.callback) {
           let resolveOut, rejectOut;
-          result = new this._Promise((resolve, reject) => {
-            resolveOut = resolve;
+          result = new this._Promise((resolve2, reject) => {
+            resolveOut = resolve2;
             rejectOut = reject;
           }).catch((err) => {
             Error.captureStackTrace(err);
@@ -5098,8 +5098,8 @@ var require_client2 = __commonJS({
       }
       let result;
       if (!cb) {
-        result = new this._Promise(function(resolve, reject) {
-          cb = (err) => err ? reject(err) : resolve();
+        result = new this._Promise(function(resolve2, reject) {
+          cb = (err) => err ? reject(err) : resolve2();
         });
       }
       const doEnd = function() {
@@ -6424,7 +6424,7 @@ function verifyProductionRollback(input) {
 var requireThat10 = (value, message) => {
   if (!value) throw new Error(message);
 };
-function createVercelEvidenceReader({ projectId, teamId, productionHost, readToken, fetchImpl = fetch, now = Date.now, wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), completionTimeoutMs = 45 * 6e4, pollIntervalMs = 15e3 }) {
+function createVercelEvidenceReader({ projectId, teamId, productionHost, readToken, fetchImpl = fetch, now = Date.now, wait = (ms) => new Promise((resolve2) => setTimeout(resolve2, ms)), completionTimeoutMs = 45 * 6e4, pollIntervalMs = 15e3 }) {
   requireThat10(/^prj_[a-zA-Z0-9]+$/.test(projectId) && /^team_[a-zA-Z0-9]+$/.test(teamId), "Pinned Vercel target required");
   requireThat10(/^[a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,}$/.test(productionHost), "Pinned production hostname required");
   requireThat10(Number.isInteger(completionTimeoutMs) && completionTimeoutMs > 0 && completionTimeoutMs <= 45 * 6e4 && Number.isInteger(pollIntervalMs) && pollIntervalMs > 0 && pollIntervalMs <= 6e4, "Bounded provider observation required");
@@ -6528,7 +6528,7 @@ function createArtifactProvenanceVerifier({ policy: sourcePolicy, manifestPath, 
   return async (bundle) => {
     const raw = await readFile(manifestPath, "utf8");
     const manifest = JSON.parse(raw);
-    requireThat12(bundle.version === 2 && manifest.version === 1 && manifest.releaseSha === bundle.releaseSha && manifest.target === "production" && Array.isArray(manifest.files) && digest(raw) === bundle.artifactSha256, "Manifest differs from approved artifact");
+    requireThat12(bundle.version === 2 && (manifest.version === 1 && manifest.aliases === void 0 || manifest.version === 2 && Array.isArray(manifest.aliases) && manifest.aliases.length > 0) && manifest.releaseSha === bundle.releaseSha && manifest.target === "production" && Array.isArray(manifest.files) && digest(raw) === bundle.artifactSha256, "Manifest differs from approved artifact");
     const args = [
       "attestation",
       "verify",
@@ -6562,14 +6562,14 @@ function createArtifactProvenanceVerifier({ policy: sourcePolicy, manifestPath, 
 
 // infrastructure/release-custody/owner-gate/vercel-prebuilt.mjs
 import { mkdtemp, mkdir, cp, writeFile, rm } from "node:fs/promises";
-import { join as join2, isAbsolute as isAbsolute2 } from "node:path";
+import { join as join2, isAbsolute as isAbsolute3 } from "node:path";
 import { tmpdir } from "node:os";
 import { execFile as execFile2 } from "node:child_process";
 import { promisify as promisify2 } from "node:util";
 
 // infrastructure/release-custody/owner-gate/prebuilt-artifact.mjs
-import { lstat, readdir, open, realpath, readFile as readFile2 } from "node:fs/promises";
-import { join, relative, basename } from "node:path";
+import { lstat, readdir, open, realpath, readFile as readFile2, readlink } from "node:fs/promises";
+import { join, relative, basename, resolve, dirname, isAbsolute as isAbsolute2 } from "node:path";
 import { constants } from "node:fs";
 import { createHash as createHash8 } from "node:crypto";
 var requireThat13 = (value, message) => {
@@ -6579,13 +6579,23 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
   requireThat13(/^[a-f0-9]{40}$/.test(releaseSha), "Exact artifact source required");
   const rootStat = await lstat(outputRoot);
   requireThat13(rootStat.isDirectory() && !rootStat.isSymbolicLink(), "Materialized artifact root required");
-  const root = await realpath(outputRoot), files = [];
+  const root = await realpath(outputRoot), files = [], aliases = [];
   let totalBytes = 0;
   async function visit(directory) {
     for (const name of await readdir(directory)) {
       const path = join(directory, name), stat = await lstat(path);
       const key = relative(root, path).split("\\").join("/");
-      requireThat13(!stat.isSymbolicLink(), `Artifact symlink refused: ${key}`);
+      if (stat.isSymbolicLink()) {
+        const link = await readlink(path);
+        const target = resolve(dirname(path), link), targetKey = relative(root, target).split("\\").join("/");
+        requireThat13(/^functions\/.+\.func$/.test(key) && /^functions\/.+\.func$/.test(targetKey) && !isAbsolute2(link) && !link.includes("\\") && !/[\u0000-\u001f\u007f]/.test(link) && !targetKey.split("/").includes(".."), "Artifact symlink must be an internal function alias");
+        const targetStat = await lstat(target);
+        requireThat13(targetStat.isDirectory() && !targetStat.isSymbolicLink() && await realpath(target) === target, "Artifact symlink target must be canonical, not chained");
+        requireThat13((await lstat(join(target, ".vc-config.json"))).isFile(), "Function alias configuration missing");
+        requireThat13(aliases.length < 1e5, "Too many function aliases");
+        aliases.push({ path: key, link });
+        continue;
+      }
       requireThat13(!key.startsWith("../") && !/[\u0000-\u001f\u007f]/.test(key) && !name.includes("\\"), "Invalid artifact path");
       requireThat13(!/^\.env(?:\.|$)/i.test(basename(path)), "Environment file in artifact");
       if (stat.isDirectory()) {
@@ -6622,7 +6632,8 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
       requireThat13(filePaths.has(key), "Function dependency missing from artifact");
     }
   }
-  const manifest = { version: 1, releaseSha, target: "production", files };
+  aliases.sort((a, b) => Buffer.compare(Buffer.from(a.path), Buffer.from(b.path)));
+  const manifest = { version: aliases.length ? 2 : 1, releaseSha, target: "production", files, ...aliases.length ? { aliases } : {} };
   return { manifest, artifactSha256: digest(JSON.stringify(manifest)), fileCount: files.length, totalBytes };
 }
 async function verifyApprovedPrebuiltArtifact({ outputRoot, bundle }) {
@@ -6654,7 +6665,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
         const cwd = join2(workspace, "project"), home = join2(workspace, "home");
         await mkdir(join2(cwd, ".vercel"), { recursive: true, mode: 448 });
         await mkdir(home, { mode: 448 });
-        await cp(outputRoot, join2(cwd, ".vercel/output"), { recursive: true, dereference: false, errorOnExist: true, force: false });
+        await cp(outputRoot, join2(cwd, ".vercel/output"), { recursive: true, dereference: false, verbatimSymlinks: true, errorOnExist: true, force: false });
         await verifyApprovedPrebuiltArtifact({ outputRoot: join2(cwd, ".vercel/output"), bundle });
         await writeFile(join2(cwd, ".vercel/project.json"), JSON.stringify({ orgId: policy.teamId, projectId: policy.projectId }), { flag: "wx", mode: 384 });
         await beforePromotion();

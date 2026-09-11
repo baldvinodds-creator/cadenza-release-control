@@ -6,7 +6,7 @@ import { createHash as createHash4 } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
-import { join as join2, isAbsolute } from "node:path";
+import { join as join2, isAbsolute as isAbsolute2 } from "node:path";
 
 // infrastructure/release-custody/owner-gate/github-artifact.mjs
 import { createHash } from "node:crypto";
@@ -52,8 +52,8 @@ function createGithubArtifactReader({ policy: sourcePolicy, readJson }) {
 }
 
 // infrastructure/release-custody/owner-gate/prebuilt-artifact.mjs
-import { lstat, readdir, open, realpath, readFile } from "node:fs/promises";
-import { join, relative, basename } from "node:path";
+import { lstat, readdir, open, realpath, readFile, readlink } from "node:fs/promises";
+import { join, relative, basename, resolve, dirname, isAbsolute } from "node:path";
 import { constants } from "node:fs";
 import { createHash as createHash3 } from "node:crypto";
 
@@ -77,13 +77,23 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
   requireThat2(/^[a-f0-9]{40}$/.test(releaseSha), "Exact artifact source required");
   const rootStat = await lstat(outputRoot);
   requireThat2(rootStat.isDirectory() && !rootStat.isSymbolicLink(), "Materialized artifact root required");
-  const root = await realpath(outputRoot), files = [];
+  const root = await realpath(outputRoot), files = [], aliases = [];
   let totalBytes = 0;
   async function visit(directory) {
     for (const name of await readdir(directory)) {
       const path = join(directory, name), stat = await lstat(path);
       const key = relative(root, path).split("\\").join("/");
-      requireThat2(!stat.isSymbolicLink(), `Artifact symlink refused: ${key}`);
+      if (stat.isSymbolicLink()) {
+        const link = await readlink(path);
+        const target = resolve(dirname(path), link), targetKey = relative(root, target).split("\\").join("/");
+        requireThat2(/^functions\/.+\.func$/.test(key) && /^functions\/.+\.func$/.test(targetKey) && !isAbsolute(link) && !link.includes("\\") && !/[\u0000-\u001f\u007f]/.test(link) && !targetKey.split("/").includes(".."), "Artifact symlink must be an internal function alias");
+        const targetStat = await lstat(target);
+        requireThat2(targetStat.isDirectory() && !targetStat.isSymbolicLink() && await realpath(target) === target, "Artifact symlink target must be canonical, not chained");
+        requireThat2((await lstat(join(target, ".vc-config.json"))).isFile(), "Function alias configuration missing");
+        requireThat2(aliases.length < 1e5, "Too many function aliases");
+        aliases.push({ path: key, link });
+        continue;
+      }
       requireThat2(!key.startsWith("../") && !/[\u0000-\u001f\u007f]/.test(key) && !name.includes("\\"), "Invalid artifact path");
       requireThat2(!/^\.env(?:\.|$)/i.test(basename(path)), "Environment file in artifact");
       if (stat.isDirectory()) {
@@ -120,7 +130,8 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
       requireThat2(filePaths.has(key), "Function dependency missing from artifact");
     }
   }
-  const manifest = { version: 1, releaseSha, target: "production", files };
+  aliases.sort((a, b) => Buffer.compare(Buffer.from(a.path), Buffer.from(b.path)));
+  const manifest = { version: aliases.length ? 2 : 1, releaseSha, target: "production", files, ...aliases.length ? { aliases } : {} };
   return { manifest, artifactSha256: digest(JSON.stringify(manifest)), fileCount: files.length, totalBytes };
 }
 
@@ -158,7 +169,7 @@ async function downloadGithubArtifact({ evidence, destination, readToken, fetchI
   return destination;
 }
 async function prepareArtifactForAttestation({ policy, request, workRoot, readJson, readToken, fetchImpl, pythonPath = "/usr/bin/python3" }) {
-  requireThat3(isAbsolute(workRoot) && isAbsolute(pythonPath), "Trusted absolute preparer paths required");
+  requireThat3(isAbsolute2(workRoot) && isAbsolute2(pythonPath), "Trusted absolute preparer paths required");
   const evidence = await createGithubArtifactReader({ policy, readJson })(request);
   const archive = join2(workRoot, "provider-artifact.zip"), unpacked = join2(workRoot, "unpacked");
   await downloadGithubArtifact({ evidence, destination: archive, readToken, fetchImpl });
