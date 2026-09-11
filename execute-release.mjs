@@ -15,6 +15,7 @@ import { digest, parseBundle } from './gate/core.mjs';
 const execute = promisify(execFile);
 const requireThat = (value, message) => { if (!value) throw Error(message); };
 let ledger;
+let phase = "request-validation";
 try {
   const config = JSON.parse(await readFile(new URL('./enrollment.json', import.meta.url), 'utf8'));
   const mode = process.argv[2];
@@ -35,24 +36,30 @@ try {
   };
   const readControlJson = api(policy.controlRepository, process.env.GITHUB_TOKEN);
   const readSourceJson = api(policy.repository, process.env.GH_SOURCE_READ_TOKEN);
+  phase = "workflow-binding";
   const approval = await createGithubReleaseRunReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
   const workRoot = await mkdtemp(join(process.env.RUNNER_TEMP, 'approved-artifact-'));
+  phase = "artifact-preparation";
   const prepared = await prepareArtifactForAttestation({
     policy: { repository: policy.repository, builderWorkflow: '.github/workflows/owner-prebuilt-build.yml', builderWorkflowSha256: config.reviewedBuilderWorkflowSha256, toolchainLockSha256: config.reviewedToolchainLockSha256 },
     request: { releaseSha: bundle.releaseSha, buildRunId: Number(process.env.BUILD_RUN_ID), artifactId: Number(process.env.ARTIFACT_ID) },
     workRoot, readJson: readSourceJson, readToken: async () => process.env.GH_SOURCE_READ_TOKEN,
   });
   requireThat(prepared.artifactSha256 === bundle.artifactSha256, 'Approved artifact differs from private build');
+  phase = "attestation-download";
   await execute('/usr/bin/gh', ['attestation', 'download', prepared.manifestPath, '--repo', policy.controlRepository], {
     cwd: workRoot, timeout: 60000, maxBuffer: 1024 * 1024,
     env: { PATH: '/usr/bin:/bin', HOME: workRoot, GH_CONFIG_DIR: workRoot, GH_TOKEN: process.env.GITHUB_TOKEN, GH_PROMPT_DISABLED: '1' },
   });
   const attestationPath = join(workRoot, `sha256:${bundle.artifactSha256}.jsonl`);
   const runAttestationVerifier = createGhAttestationRunner({ ghPath: '/usr/bin/gh', home: workRoot });
+  phase = "attestation-verification";
   const verifiedArtifact = await createArtifactProvenanceVerifier({ policy, manifestPath: prepared.manifestPath, attestationPath, runVerifier: runAttestationVerifier })(bundle);
+  phase = "freshness-recheck";
   parseBundle(rawBundle, policy, Date.now());
   if (mode === 'rehearsal') {
     requireThat(!process.env.VERCEL_RELEASE_TOKEN && !process.env.RELEASE_LEDGER_URL && !process.env.CENSUS_DATABASE_URL, 'Rehearsal received production credentials');
+  phase = "workflow-recheck";
     const rechecked = await createGithubReleaseRunReader({ policy, readJson: readControlJson })({ rawBundle, runId, expectedBundleSha256 });
     requireThat(JSON.stringify(rechecked) === JSON.stringify(approval), 'Approval changed during rehearsal');
     const receipt = { mode: 'AUTOMATED_AUTHORIZATION_AND_ARTIFACT_REHEARSAL', ...approval, artifactSha256: verifiedArtifact.artifactSha256, deploymentPerformed: false };
@@ -63,6 +70,7 @@ try {
     assertOwnerControlledPolicy(policy);
     const productionPolicy = readObserverPolicy(process.env.PRODUCTION_OBSERVER_POLICY_GZIP, config.productionPolicySha256);
     requireThat(process.env.VERCEL_RELEASE_TOKEN && process.env.RELEASE_LEDGER_URL && process.env.CENSUS_DATABASE_URL, 'Protected production credentials missing');
+  phase = "ledger-connection";
     ledger = await connectProtectedLedger({ connectionString: process.env.RELEASE_LEDGER_URL, policy: config.ledgerPolicy });
     const runtime = createControlReleaseRuntime({ policy: { ...policy, enabled: true, deploymentCredentialsAttached: true },
       productionPolicy, readSourceJson, readControlJson,
@@ -70,12 +78,13 @@ try {
       ledgerQuery: ledger.query, outputRoot: prepared.outputRoot, manifestPath: prepared.manifestPath, attestationPath, runAttestationVerifier,
       runPrebuiltCli: createPrebuiltCliRunner({ cliPath: join(process.cwd(), 'toolchain/node_modules/vercel/dist/index.js'), readToken: async () => process.env.VERCEL_RELEASE_TOKEN }),
     });
+  phase = "production-gate-and-deployment";
     const receipt = await runtime({ rawBundle, runId, expectedBundleSha256 });
     await writeFile(join(process.env.RUNNER_TEMP, 'owner-release-receipt.json'), JSON.stringify(receipt), { flag: 'wx', mode: 0o600 });
     console.log(JSON.stringify(receipt));
   }
 } catch {
   // Never echo child/provider errors containing signed URLs, env or credentials.
-  console.error('Protected release refused or outcome uncertain. Preserve evidence; do not automatically retry.');
+  console.error(`Protected release refused or outcome uncertain. Phase: ${phase}. Preserve evidence; do not automatically retry.`);
   process.exitCode = 1;
 } finally { await ledger?.close(); }

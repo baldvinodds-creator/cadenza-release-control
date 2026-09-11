@@ -13,8 +13,8 @@
     },
     {
       "path": "execute-release.mjs",
-      "sha256": "a7e24ffab8744c9bbed0b0ce86ff731dd00369ee65dd93a08fe09a8b4799dfc9",
-      "bytes": 7161
+      "sha256": "0922980636bd0849f7e812495f435e19d26f0d06118bca3dd9c8d358345ac7b9",
+      "bytes": 7484
     },
     {
       "path": "prepare-attestation.mjs",
