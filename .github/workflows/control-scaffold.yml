@@ -29,6 +29,7 @@ jobs:
           console.log('Control distribution integrity passed. No release executed.');
           JS
           node --check execute-release.mjs
+          node --test prebuilt-cli-credential.test.mjs
           if node execute-release.mjs rehearsal > /tmp/control-denial.log 2>&1; then
             echo 'Unenrolled invocation unexpectedly succeeded'
             exit 1
