@@ -189,7 +189,17 @@ function createPrebuiltCliRunner({ cliPath, readToken }) {
         }
       });
       return stdout;
-    } catch {
+    } catch (error) {
+      const output = typeof error?.stderr === "string" ? error.stderr : "";
+      const classes = [
+        ["NO_CREDENTIALS", /No existing credentials found/i],
+        ["INVALID_TOKEN", /specified token is not valid/i],
+        ["FILE_LIMIT", /too many files|15,000|15000|files.{0,50}limit/i],
+        ["FUNCTION_SIZE", /function.{0,80}(size|exceed)|uncompressed.{0,50}limit/i],
+        ["PREBUILT_CONFIGURATION", /prebuilt.{0,120}(environment|target|configuration)|node.{0,40}version/i],
+        ["PERMISSION", /forbidden|not authorized|permission denied/i]
+      ];
+      console.error(`Prebuilt CLI failure class: ${classes.find(([, pattern]) => pattern.test(output))?.[0] ?? "UNCLASSIFIED"}`);
       throw new Error("Prebuilt upload failed or outcome is uncertain; inspect provider, do not retry approval");
     } finally {
       await rm(authPath, { force: true });
@@ -222,6 +232,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
         const args = [
           "deploy",
           "--prebuilt",
+          "--archive=tgz",
           "--prod",
           "--yes",
           "--format=json",
