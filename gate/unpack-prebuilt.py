@@ -6,6 +6,7 @@ verification are separate subsequent requirements. No provider credentials here.
 """
 import hashlib
 import os
+import posixpath
 from pathlib import Path, PurePosixPath
 import re
 import stat
@@ -26,8 +27,10 @@ def unpack_prebuilt(archive, destination, expected_zip_sha256):
             raise ValueError("Provider artifact digest mismatch")
     destination = Path(destination)
     destination.mkdir(mode=0o700)  # Never merge or overwrite existing state.
+    destination = destination.resolve()
     seen = set()
     total = 0
+    aliases = []
     with zipfile.ZipFile(path) as zipped:
         entries = zipped.infolist()
         if len(entries) != 1 or entries[0].filename != "prebuilt.tar" or entries[0].file_size > LIMIT or entries[0].flag_bits & 1:
@@ -49,6 +52,16 @@ def unpack_prebuilt(archive, destination, expected_zip_sha256):
                     if key in seen or len(seen) >= 100002:
                         raise ValueError("Duplicate or excessive artifact entries")
                     seen.add(key)
+                    if item.issym():
+                        link = item.linkname
+                        resolved = posixpath.normpath(posixpath.join(posixpath.dirname(key), link))
+                        if (not key.startswith("output/functions/") or not key.endswith(".func")
+                            or not link or link.startswith("/") or "\\" in link
+                            or any(ord(c) < 32 or ord(c) == 127 for c in link)
+                            or not resolved.startswith("output/functions/") or not resolved.endswith(".func")):
+                            raise ValueError("Artifact links must be internal function aliases")
+                        aliases.append((key, link, resolved))
+                        continue
                     if not (item.isfile() or item.isdir()):
                         raise ValueError("Artifact links and special files refused")
                     if pieces[0] == "manifest.json" and (len(pieces) != 1 or not item.isfile()):
@@ -74,6 +87,21 @@ def unpack_prebuilt(archive, destination, expected_zip_sha256):
             # Read through EOF to force the ZIP CRC check even with TAR end padding.
             while stream.read(1024 * 1024):
                 pass
+    # Create aliases only after regular extraction. No archive write can follow
+    # a link; chained targets, nested aliases and alias/file collisions refuse.
+    alias_names = {key for key, _, _ in aliases}
+    for key, link, resolved in aliases:
+        target = destination / key
+        canonical = destination / resolved
+        if (resolved in alias_names or any(name.startswith(key + "/") for name in seen)
+            or target.exists() or target.is_symlink() or not canonical.is_dir()
+            or canonical.is_symlink() or canonical.resolve() != canonical.absolute()
+            or not (canonical / ".vc-config.json").is_file()):
+            raise ValueError("Invalid canonical function alias")
+    for key, link, _ in aliases:
+        target = destination / key
+        target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.symlink(link, target)
     if not (destination / "manifest.json").is_file() or not (destination / "output/config.json").is_file():
         raise ValueError("Incomplete prebuilt package")
     return {"files_and_directories": len(seen), "bytes": total}

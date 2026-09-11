@@ -2,7 +2,7 @@ import { createRequire } from "node:module"; const require = createRequire(impor
 
 // infrastructure/release-custody/owner-gate/vercel-prebuilt.mjs
 import { mkdtemp, mkdir, cp, writeFile, rm } from "node:fs/promises";
-import { join as join2, isAbsolute } from "node:path";
+import { join as join2, isAbsolute as isAbsolute2 } from "node:path";
 import { tmpdir } from "node:os";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -47,8 +47,8 @@ function parseBundle(raw, policy, now) {
 }
 
 // infrastructure/release-custody/owner-gate/prebuilt-artifact.mjs
-import { lstat, readdir, open, realpath, readFile } from "node:fs/promises";
-import { join, relative, basename } from "node:path";
+import { lstat, readdir, open, realpath, readFile, readlink } from "node:fs/promises";
+import { join, relative, basename, resolve, dirname, isAbsolute } from "node:path";
 import { constants } from "node:fs";
 import { createHash as createHash2 } from "node:crypto";
 var requireThat2 = (value, message) => {
@@ -58,13 +58,23 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
   requireThat2(/^[a-f0-9]{40}$/.test(releaseSha), "Exact artifact source required");
   const rootStat = await lstat(outputRoot);
   requireThat2(rootStat.isDirectory() && !rootStat.isSymbolicLink(), "Materialized artifact root required");
-  const root = await realpath(outputRoot), files = [];
+  const root = await realpath(outputRoot), files = [], aliases = [];
   let totalBytes = 0;
   async function visit(directory) {
     for (const name of await readdir(directory)) {
       const path = join(directory, name), stat = await lstat(path);
       const key = relative(root, path).split("\\").join("/");
-      requireThat2(!stat.isSymbolicLink(), `Artifact symlink refused: ${key}`);
+      if (stat.isSymbolicLink()) {
+        const link = await readlink(path);
+        const target = resolve(dirname(path), link), targetKey = relative(root, target).split("\\").join("/");
+        requireThat2(/^functions\/.+\.func$/.test(key) && /^functions\/.+\.func$/.test(targetKey) && !isAbsolute(link) && !link.includes("\\") && !/[\u0000-\u001f\u007f]/.test(link) && !targetKey.split("/").includes(".."), "Artifact symlink must be an internal function alias");
+        const targetStat = await lstat(target);
+        requireThat2(targetStat.isDirectory() && !targetStat.isSymbolicLink() && await realpath(target) === target, "Artifact symlink target must be canonical, not chained");
+        requireThat2((await lstat(join(target, ".vc-config.json"))).isFile(), "Function alias configuration missing");
+        requireThat2(aliases.length < 1e5, "Too many function aliases");
+        aliases.push({ path: key, link });
+        continue;
+      }
       requireThat2(!key.startsWith("../") && !/[\u0000-\u001f\u007f]/.test(key) && !name.includes("\\"), "Invalid artifact path");
       requireThat2(!/^\.env(?:\.|$)/i.test(basename(path)), "Environment file in artifact");
       if (stat.isDirectory()) {
@@ -101,7 +111,8 @@ async function inspectPrebuiltArtifact({ outputRoot, releaseSha }) {
       requireThat2(filePaths.has(key), "Function dependency missing from artifact");
     }
   }
-  const manifest = { version: 1, releaseSha, target: "production", files };
+  aliases.sort((a, b) => Buffer.compare(Buffer.from(a.path), Buffer.from(b.path)));
+  const manifest = { version: aliases.length ? 2 : 1, releaseSha, target: "production", files, ...aliases.length ? { aliases } : {} };
   return { manifest, artifactSha256: digest(JSON.stringify(manifest)), fileCount: files.length, totalBytes };
 }
 async function verifyApprovedPrebuiltArtifact({ outputRoot, bundle }) {
@@ -166,7 +177,7 @@ var requireThat3 = (value, message) => {
 };
 var execute = promisify(execFile);
 function createPrebuiltCliRunner({ cliPath, readToken }) {
-  requireThat3(isAbsolute(cliPath), "Absolute reviewed CLI path required");
+  requireThat3(isAbsolute2(cliPath), "Absolute reviewed CLI path required");
   return async ({ cwd, home, args, beforeStart }) => {
     const token = await readToken();
     requireThat3(typeof token === "string" && token.length > 0, "Protected deployment credential missing");
@@ -225,7 +236,7 @@ function createVercelPrebuiltDeployer({ policy: sourcePolicy, outputRoot, verify
         const cwd = join2(workspace, "project"), home = join2(workspace, "home");
         await mkdir(join2(cwd, ".vercel"), { recursive: true, mode: 448 });
         await mkdir(home, { mode: 448 });
-        await cp(outputRoot, join2(cwd, ".vercel/output"), { recursive: true, dereference: false, errorOnExist: true, force: false });
+        await cp(outputRoot, join2(cwd, ".vercel/output"), { recursive: true, dereference: false, verbatimSymlinks: true, errorOnExist: true, force: false });
         await verifyApprovedPrebuiltArtifact({ outputRoot: join2(cwd, ".vercel/output"), bundle });
         await writeFile(join2(cwd, ".vercel/project.json"), JSON.stringify({ orgId: policy.teamId, projectId: policy.projectId }), { flag: "wx", mode: 384 });
         await beforePromotion();

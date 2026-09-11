@@ -31,7 +31,7 @@ function createArtifactProvenanceVerifier({ policy: sourcePolicy, manifestPath, 
   return async (bundle) => {
     const raw = await readFile(manifestPath, "utf8");
     const manifest = JSON.parse(raw);
-    requireThat(bundle.version === 2 && manifest.version === 1 && manifest.releaseSha === bundle.releaseSha && manifest.target === "production" && Array.isArray(manifest.files) && digest(raw) === bundle.artifactSha256, "Manifest differs from approved artifact");
+    requireThat(bundle.version === 2 && (manifest.version === 1 && manifest.aliases === void 0 || manifest.version === 2 && Array.isArray(manifest.aliases) && manifest.aliases.length > 0) && manifest.releaseSha === bundle.releaseSha && manifest.target === "production" && Array.isArray(manifest.files) && digest(raw) === bundle.artifactSha256, "Manifest differs from approved artifact");
     const args = [
       "attestation",
       "verify",
