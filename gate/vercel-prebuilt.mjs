@@ -172,8 +172,10 @@ function createPrebuiltCliRunner({ cliPath, readToken }) {
     requireThat3(typeof token === "string" && token.length > 0, "Protected deployment credential missing");
     requireThat3(typeof beforeStart === "function", "Immediate approval-expiry check required");
     await beforeStart();
+    const authPath = join2(home, "auth.json");
+    await writeFile(authPath, JSON.stringify({ token }), { flag: "wx", mode: 384 });
     try {
-      const { stdout } = await execute(process.execPath, [cliPath, ...args], {
+      const { stdout } = await execute(process.execPath, [cliPath, ...args, "--global-config", home], {
         cwd,
         timeout: 18e4,
         maxBuffer: 1024 * 1024,
@@ -183,13 +185,14 @@ function createPrebuiltCliRunner({ cliPath, readToken }) {
           TMPDIR: home,
           CI: "1",
           NO_COLOR: "1",
-          VERCEL_TELEMETRY_DISABLED: "1",
-          VERCEL_TOKEN: token
+          VERCEL_TELEMETRY_DISABLED: "1"
         }
       });
       return stdout;
     } catch {
       throw new Error("Prebuilt upload failed or outcome is uncertain; inspect provider, do not retry approval");
+    } finally {
+      await rm(authPath, { force: true });
     }
   };
 }

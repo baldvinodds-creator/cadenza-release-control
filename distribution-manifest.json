@@ -68,8 +68,8 @@
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "6a2956c5693966e4fa57db2b75fecd268d93d158afffd6f646973bf518ed6476",
-      "bytes": 14116
+      "sha256": "4b2274fc6ea02c9c849a51c230ee26cd847fca29d4d07edc6a74f4b07196460b",
+      "bytes": 14301
     },
     {
       "path": "gate/github-permissions.mjs",
@@ -100,6 +100,11 @@
       "path": "gate/postgres-ledger.sql",
       "sha256": "fae54382bc8389d5ee2678ac5d8589513a1da6cc7616f054d9d16921790ad39d",
       "bytes": 3646
+    },
+    {
+      "path": "prebuilt-cli-credential.test.mjs",
+      "sha256": "07ef694001ef1bfc0a7f02b1fc27944579ceb9433545ab1d181db05e5b971745",
+      "bytes": 1427
     }
   ]
 }
