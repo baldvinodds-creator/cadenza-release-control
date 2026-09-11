@@ -17,3 +17,15 @@ process.exitCode=${fail?1:0};if(!process.exitCode)process.stdout.write('verified
   await assert.rejects(access(join(home,'auth.json')));
  }finally{await rm(root,{recursive:true,force:true});}
 });
+test('provider diagnostic never emits its credential, URLs or quoted metadata',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'prebuilt-redaction-test-')),home=join(root,'home'),cli=join(root,'cli.mjs');await mkdir(home);
+ const messages=[],original=console.error;
+ try{
+  await writeFile(cli,`process.stderr.write('Error: Upload nonsecret-fixture https://provider.invalid/?secret=hidden "private metadata" failed\\n');process.exitCode=1;`);
+  console.error=(...args)=>messages.push(args.join(' '));
+  const run=createPrebuiltCliRunner({cliPath:cli,readToken:async()=> 'nonsecret-fixture'});
+  await assert.rejects(()=>run({cwd:root,home,args:[],beforeStart:async()=>{}}));
+  assert.match(messages.join('\n'),/Prebuilt CLI diagnostic/);
+  for(const value of ['nonsecret-fixture','secret=hidden','private metadata'])assert.equal(messages.join('\n').includes(value),false);
+ }finally{console.error=original;await rm(root,{recursive:true,force:true});}
+});
