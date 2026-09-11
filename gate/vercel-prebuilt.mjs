@@ -177,7 +177,7 @@ function createPrebuiltCliRunner({ cliPath, readToken }) {
     try {
       const { stdout } = await execute(process.execPath, [cliPath, ...args, "--global-config", home], {
         cwd,
-        timeout: 18e4,
+        timeout: 6e5,
         maxBuffer: 1024 * 1024,
         env: {
           PATH: "/usr/local/bin:/usr/bin:/bin",
@@ -199,7 +199,7 @@ function createPrebuiltCliRunner({ cliPath, readToken }) {
         ["PREBUILT_CONFIGURATION", /prebuilt.{0,120}(environment|target|configuration)|node.{0,40}version/i],
         ["PERMISSION", /forbidden|not authorized|permission denied/i]
       ];
-      console.error(`Prebuilt CLI failure class: ${classes.find(([, pattern]) => pattern.test(output))?.[0] ?? "UNCLASSIFIED"}`);
+      console.error(`Prebuilt CLI failure class: ${error?.killed ? "TIMEOUT" : classes.find(([, pattern]) => pattern.test(output))?.[0] ?? "UNCLASSIFIED"}`);
       const diagnostic = output.split(/\r?\n/).map((line) => line.replace(/\x1b\[[0-9;]*m/g, "")).find((line) => line.startsWith("Error:"));
       if (diagnostic) console.error(`Prebuilt CLI diagnostic: ${diagnostic.split(token).join("[credential redacted]").replace(/https?:\/\/\S+/g, "[provider link]").replace(/["'`][^"'`]*["'`]/g, "[quoted value]").slice(0, 800)}`);
       throw new Error("Prebuilt upload failed or outcome is uncertain; inspect provider, do not retry approval");

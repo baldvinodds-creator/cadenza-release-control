@@ -68,8 +68,8 @@
     },
     {
       "path": "gate/vercel-prebuilt.mjs",
-      "sha256": "e974ec959a1348a74b3c1f3f483622f08d40330dd4023972a05088f5b0c5eae8",
-      "bytes": 15407
+      "sha256": "87930fd2c22e42f3ebbd26a6f7be968399bd300689b31ce7c5d2282fbceab4f4",
+      "bytes": 15434
     },
     {
       "path": "gate/github-permissions.mjs",
