@@ -1,0 +1,13 @@
+name: Control scaffold
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  scaffold:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report disabled bootstrap state
+        run: echo 'Release control is not enrolled. No deployment capability is installed.'
