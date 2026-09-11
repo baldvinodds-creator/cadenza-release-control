@@ -8,13 +8,13 @@
     },
     {
       "path": "enrollment.json",
-      "sha256": "6e5bcb632d6c02d299e4d0757ed14c86d088aaf23232f59d7721ff135e52524d",
-      "bytes": 975
+      "sha256": "675a37a2546a2e34953c03479ca92a42b613c52a14db100252f047c8918587fa",
+      "bytes": 2245
     },
     {
       "path": "execute-release.mjs",
-      "sha256": "5faebb6e411fbb04b57cbf774b8134a8b0b0dcedafc312600631ff08b55b7fe2",
-      "bytes": 7232
+      "sha256": "4405220e9403e2581143b3b125bc94af245488a396678b582f959e7380ef6b70",
+      "bytes": 7146
     },
     {
       "path": "prepare-attestation.mjs",
@@ -23,8 +23,8 @@
     },
     {
       "path": ".github/workflows/owner-release.yml",
-      "sha256": "20eb8f65dbce4d60602fb61b9e9ee3dc193f698f65824f4ca968ea800b528eab",
-      "bytes": 2813
+      "sha256": "b426a07998a2a399c94a543bd5222278db0d8940b7f6dafb9fc946cdd715e366",
+      "bytes": 2823
     },
     {
       "path": ".github/workflows/request-release.yml",
@@ -95,6 +95,11 @@
       "path": "gate/postgres-ledger.sql",
       "sha256": "fae54382bc8389d5ee2678ac5d8589513a1da6cc7616f054d9d16921790ad39d",
       "bytes": 3646
+    },
+    {
+      "path": "gate/configuration.mjs",
+      "sha256": "0ee473300c0d9386f5303bc3bf8a08740d34f9d75671154df227d85e8141eb80",
+      "bytes": 954715
     }
   ]
 }

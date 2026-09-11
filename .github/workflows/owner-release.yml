@@ -64,7 +64,7 @@ jobs:
           VERCEL_RELEASE_TOKEN: ${{ inputs.mode == 'deploy' && secrets.VERCEL_RELEASE_TOKEN || '' }}
           RELEASE_LEDGER_URL: ${{ inputs.mode == 'deploy' && secrets.RELEASE_LEDGER_URL || '' }}
           CENSUS_DATABASE_URL: ${{ inputs.mode == 'deploy' && secrets.CENSUS_DATABASE_URL || '' }}
-          PRODUCTION_OBSERVER_POLICY: ${{ inputs.mode == 'deploy' && secrets.PRODUCTION_OBSERVER_POLICY || '' }}
+          PRODUCTION_OBSERVER_POLICY_GZIP: ${{ inputs.mode == 'deploy' && secrets.PRODUCTION_OBSERVER_POLICY_GZIP || '' }}
         run: node execute-release.mjs "$RELEASE_MODE"
       - name: Preserve verified public receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
